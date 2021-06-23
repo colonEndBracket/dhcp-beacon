@@ -3,6 +3,7 @@ import smtplib
 from datetime import datetime
 from email.message import EmailMessage
 from netifaces import interfaces, ifaddresses, AF_INET
+from socket import gethostname
 
 from creds import str_username, str_password, list_recipients
 
@@ -13,6 +14,8 @@ def main():
 
     # Message
     str_content = ""
+    str_content += str('Host: '+gethostname()+'\n')
+    str_content += "#"*10+'\n'
     for ifaceName in interfaces():
         # Build list matching interface name to ip addresses
         addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr':'No IP addr'}] )]
