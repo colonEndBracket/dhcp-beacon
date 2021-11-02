@@ -10,15 +10,14 @@ from creds import str_username, str_password, list_recipients
 def main():
     # Subject
     now = datetime.now().date()
-    str_subject = '['+str(now)+'] '+'IP Update'
+    str_subject = '['+str(now)+'] '+gethostname()+' booted up!'
 
     # Message
     str_content = ""
-    str_content += str('Host: '+gethostname()+'\n')
-    str_content += "#"*10+'\n'
+    str_content += str('Host: '+gethostname()+'\nTime: '+str(datetime.now())+'\n\n')
     for ifaceName in interfaces():
         # Build list matching interface name to ip addresses
-        addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr':'No IP addr'}] )]
+        addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr':'N/A'}] )]
         str_content += str(ifaceName+' - '+', '.join(addresses)+'\n')
     print(str_content)
 
@@ -35,8 +34,9 @@ def sendEmail(list_recipients,str_subject,str_content):
         server = smtplib.SMTP('smtp.gmail.com',587)
         server.ehlo()
         server.starttls()
-    except:
-        print("Issue connecting to Gmail SMTP")
+    except Exception as e:
+        print(str(e))
+        exit()
     server.login(str_username,str_password)
     server.sendmail(str_username, list_recipients, str(msg))
     server.quit()
